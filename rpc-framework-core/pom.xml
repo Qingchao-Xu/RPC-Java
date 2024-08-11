@@ -18,6 +18,22 @@
     </properties>
 
     <dependencies>
-
+        <dependency>
+            <groupId>org.xu</groupId>
+            <artifactId>rpc-framework-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- curator -->
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-framework</artifactId>
+            <version>5.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-recipes</artifactId>
+            <version>5.7.0</version>
+        </dependency>
     </dependencies>
 </project>
