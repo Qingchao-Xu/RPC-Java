@@ -1,12 +1,8 @@
 package org.xu;
 
 import org.xu.proxy.RpcClientProxy;
-import org.xu.remoting.dto.RpcRequest;
-import org.xu.remoting.dto.RpcResponse;
 import org.xu.remoting.transport.RpcRequestTransport;
 import org.xu.remoting.transport.socket.SocketRpcClient;
-
-import java.util.UUID;
 
 public class SocketClientMain {
     public static void main(String[] args) {
