@@ -1,7 +1,10 @@
 package org.xu.proxy;
 
 import lombok.extern.slf4j.Slf4j;
+import org.xu.config.RpcServiceConfig;
+import org.xu.enums.RpcErrorMessageEnum;
 import org.xu.enums.RpcResponseCodeEnum;
+import org.xu.exception.RpcException;
 import org.xu.remoting.dto.RpcRequest;
 import org.xu.remoting.dto.RpcResponse;
 import org.xu.remoting.transport.RpcRequestTransport;
@@ -17,10 +20,19 @@ import java.util.UUID;
 @Slf4j
 public class RpcClientProxy implements InvocationHandler {
 
+    private static final String INTERFACE_NAME = "interfaceName"; // 异常打印前缀
+
     private final RpcRequestTransport rpcRequestTransport;
+    private final RpcServiceConfig rpcServiceConfig;
+
+    public RpcClientProxy(RpcRequestTransport rpcRequestTransport, RpcServiceConfig rpcServiceConfig) {
+        this.rpcRequestTransport = rpcRequestTransport;
+        this.rpcServiceConfig = rpcServiceConfig;
+    }
 
     public RpcClientProxy(RpcRequestTransport rpcRequestTransport) {
         this.rpcRequestTransport = rpcRequestTransport;
+        this.rpcServiceConfig = new RpcServiceConfig();
     }
 
 
@@ -44,6 +56,8 @@ public class RpcClientProxy implements InvocationHandler {
                 .interfaceName(method.getDeclaringClass().getName())
                 .paramTypes(method.getParameterTypes())
                 .requestId(UUID.randomUUID().toString())
+                .group(rpcServiceConfig.getGroup())
+                .version(rpcServiceConfig.getVersion())
                 .build();
         RpcResponse<Object> rpcResponse = null;
         rpcResponse = (RpcResponse<Object>) rpcRequestTransport.sendRpcRequest(rpcRequest);
@@ -53,13 +67,15 @@ public class RpcClientProxy implements InvocationHandler {
 
     private void check(RpcResponse<Object> rpcResponse, RpcRequest rpcRequest) {
         if (rpcResponse == null) {
-            throw new RuntimeException("失败");
+            throw new RpcException(RpcErrorMessageEnum.SERVICE_INVOCATION_FAILURE, INTERFACE_NAME + ":" + rpcRequest.getInterfaceName());
         }
+
         if (!rpcRequest.getRequestId().equals(rpcResponse.getRequestId())) {
-            throw new RuntimeException("id不一致");
+            throw new RpcException(RpcErrorMessageEnum.REQUEST_NOT_MATCH_RESPONSE, INTERFACE_NAME + ":" + rpcRequest.getInterfaceName());
         }
+
         if (rpcResponse.getCode() == null || !rpcResponse.getCode().equals(RpcResponseCodeEnum.SUCCESS.getCode())) {
-            throw new RuntimeException("失败");
+            throw new RpcException(RpcErrorMessageEnum.SERVICE_INVOCATION_FAILURE, INTERFACE_NAME + ":" + rpcRequest.getInterfaceName());
         }
     }
 
