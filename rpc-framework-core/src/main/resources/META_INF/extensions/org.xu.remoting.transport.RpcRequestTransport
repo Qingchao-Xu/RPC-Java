@@ -1,0 +1,1 @@
+socket=org.xu.remoting.transport.socket.SocketRpcClient

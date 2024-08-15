@@ -3,7 +3,9 @@ package org.xu.provider.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.xu.config.RpcServiceConfig;
 import org.xu.enums.RpcErrorMessageEnum;
+import org.xu.enums.ServiceRegistryEnum;
 import org.xu.exception.RpcException;
+import org.xu.extension.ExtensionLoader;
 import org.xu.provider.ServiceProvider;
 import org.xu.registry.ServiceRegistry;
 import org.xu.registry.zk.ZkServiceRegistryImpl;
@@ -30,7 +32,7 @@ public class ZkServiceProviderImpl implements ServiceProvider {
     public ZkServiceProviderImpl() {
         serviceMap = new ConcurrentHashMap<>();
         registeredService = ConcurrentHashMap.newKeySet();
-        this.serviceRegistry = new ZkServiceRegistryImpl();
+        serviceRegistry = ExtensionLoader.getExtensionLoader(ServiceRegistry.class).getExtension(ServiceRegistryEnum.ZK.getName());
     }
 
     @Override

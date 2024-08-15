@@ -1,10 +1,13 @@
 package org.xu.registry;
 
+import org.xu.extension.SPI;
+
 import java.net.InetSocketAddress;
 
 /**
  * 服务发现
  */
+@SPI
 public interface ServiceDiscovery {
     /**
      * 根据 rpcServiceName 获取远程服务地址

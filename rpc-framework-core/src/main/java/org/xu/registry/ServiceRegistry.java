@@ -1,10 +1,13 @@
 package org.xu.registry;
 
+import org.xu.extension.SPI;
+
 import java.net.InetSocketAddress;
 
 /**
  * 服务注册
  */
+@SPI
 public interface ServiceRegistry {
     /**
      * 注册服务到服务中心

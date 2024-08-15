@@ -23,7 +23,7 @@ public final class SingletonFactory {
         if (OBJECT_MAP.containsKey(key)) {
             return c.cast(OBJECT_MAP.get(key)); // cast 用来强制类型转换
         } else {
-            synchronized (lock) { // 加锁，防止多个线程创建多个对象
+            synchronized (lock) { // 双重锁校验，加锁，防止多个线程创建多个对象，final就不用volatile吗？
                 if (!OBJECT_MAP.containsKey(key)) {
                     try {
                         T instance = c.getDeclaredConstructor().newInstance(); // 创建对象
