@@ -33,7 +33,7 @@ public class SocketRpcClient implements RpcRequestTransport {
     @Override
     public Object sendRpcRequest(RpcRequest rpcRequest) {
         // 通过服务发现获取地址
-        InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest.getRpcServiceName());
+        InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest);
         try (Socket socket = new Socket()){
             socket.connect(inetSocketAddress);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());

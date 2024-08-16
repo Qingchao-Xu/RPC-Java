@@ -1,0 +1,2 @@
+random=org.xu.loadbalance.loadbalancer.RandomLoadBalance
+consistentHash=org.xu.loadbalance.loadbalancer.ConsistentHashLoadBalance
