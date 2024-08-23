@@ -2,9 +2,11 @@ package org.xu.remoting.transport.socket;
 
 import lombok.extern.slf4j.Slf4j;
 import org.xu.exception.RpcException;
+import org.xu.factory.SingletonFactory;
 import org.xu.provider.ServiceProvider;
 import org.xu.remoting.dto.RpcRequest;
 import org.xu.remoting.dto.RpcResponse;
+import org.xu.remoting.handler.RpcRequestHandler;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -20,11 +22,11 @@ import java.net.Socket;
 public class SocketRpcRequestHandlerRunnable implements Runnable{
 
     private final Socket socket;
-    private final ServiceProvider serviceProvider;
+    private final RpcRequestHandler rpcRequestHandler;
 
     public SocketRpcRequestHandlerRunnable(Socket socket, ServiceProvider serviceProvider) {
         this.socket = socket;
-        this.serviceProvider = serviceProvider;
+        this.rpcRequestHandler = SingletonFactory.getInstance(RpcRequestHandler.class);
     }
 
     @Override
@@ -34,15 +36,7 @@ public class SocketRpcRequestHandlerRunnable implements Runnable{
              ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream())) {
             RpcRequest rpcRequest = (RpcRequest) objectInputStream.readObject();
             // 反射调用方法
-            Object service = serviceProvider.getService(rpcRequest.getRpcServiceName());
-            Object result;
-            try {
-                Method method = service.getClass().getMethod(rpcRequest.getMethodName(), rpcRequest.getParamTypes());
-                result = method.invoke(service, rpcRequest.getParameters());
-                log.info("service:[{}] successful invoke method:[{}]", rpcRequest.getInterfaceName(), rpcRequest.getMethodName());
-            } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
-                throw new RpcException(e.getMessage(), e);
-            }
+            Object result = rpcRequestHandler.handle(rpcRequest);
             objectOutputStream.writeObject(RpcResponse.success(result, rpcRequest.getRequestId()));
             objectOutputStream.flush();
         } catch (ClassNotFoundException | IOException e) {
