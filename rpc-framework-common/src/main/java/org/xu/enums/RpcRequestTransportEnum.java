@@ -10,7 +10,8 @@ import lombok.Getter;
 @Getter
 public enum RpcRequestTransportEnum {
 
-    SOCKET("socket");
+    SOCKET("socket"),
+    NETTY("netty");
 
     private final String name;
 }

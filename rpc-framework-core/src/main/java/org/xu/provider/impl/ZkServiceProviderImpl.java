@@ -8,7 +8,6 @@ import org.xu.exception.RpcException;
 import org.xu.extension.ExtensionLoader;
 import org.xu.provider.ServiceProvider;
 import org.xu.registry.ServiceRegistry;
-import org.xu.registry.zk.ZkServiceRegistryImpl;
 import org.xu.remoting.transport.socket.SocketRpcServer;
 
 import java.net.InetAddress;

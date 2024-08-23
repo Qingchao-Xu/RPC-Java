@@ -8,11 +8,14 @@ import org.xu.exception.RpcException;
 import org.xu.remoting.dto.RpcRequest;
 import org.xu.remoting.dto.RpcResponse;
 import org.xu.remoting.transport.RpcRequestTransport;
+import org.xu.remoting.transport.netty.client.NettyRpcClient;
+import org.xu.remoting.transport.socket.SocketRpcClient;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * 客户端的动态代理类
@@ -60,7 +63,14 @@ public class RpcClientProxy implements InvocationHandler {
                 .version(rpcServiceConfig.getVersion())
                 .build();
         RpcResponse<Object> rpcResponse = null;
-        rpcResponse = (RpcResponse<Object>) rpcRequestTransport.sendRpcRequest(rpcRequest);
+        if (rpcRequestTransport instanceof NettyRpcClient) {
+            CompletableFuture<RpcResponse<Object>> completableFuture =
+                    (CompletableFuture<RpcResponse<Object>>) rpcRequestTransport.sendRpcRequest(rpcRequest);
+            rpcResponse = completableFuture.get();
+        }
+        if (rpcRequestTransport instanceof SocketRpcClient) {
+            rpcResponse = (RpcResponse<Object>) rpcRequestTransport.sendRpcRequest(rpcRequest);
+        }
         this.check(rpcResponse, rpcRequest);
         return rpcResponse.getData();
     }
